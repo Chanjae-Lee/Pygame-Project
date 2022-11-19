@@ -1,3 +1,5 @@
+## 좀비를 피하며 살아남는 게임
+
 import pygame
 from random import *
 from math import *
@@ -6,17 +8,21 @@ from datetime import datetime
 # SCREEN SIZE
 size = (1500, 900)
 
-# enemy 왼쪽 이미지
+
+##### image for sprite #####
+
+# 좀비 왼쪽 이미지
 enemy_left_motion_img = [['a1_l.png','a1_l.png','a1_l.png','a1_l.png', 'a2_l.png', 'a2_l.png','a2_l.png','a2_l.png','a3_l.png','a3_l.png','a3_l.png','a3_l.png', 'a4_l.png','a4_l.png','a4_l.png','a4_l.png'],\
                          ['b4_l.png','b1_l.png','b1_l.png','b1_l.png', 'b1_l.png', 'b2_l.png','b2_l.png','b2_l.png','b2_l.png','b3_l.png','b3_l.png','b3_l.png', 'b3_l.png','b4_l.png','b4_l.png','b4_l.png'],\
                          ['c4_l.png','c4_l.png','c1_l.png','c1_l.png', 'c1_l.png', 'c1_l.png','c2_l.png','c2_l.png','c2_l.png','c2_l.png','c3_l.png','c3_l.png', 'c3_l.png','c3_l.png','c4_l.png','c4_l.png'],\
                          ['d4_l.png','d4_l.png','d4_l.png','d1_l.png', 'd1_l.png', 'd1_l.png','d1_l.png','d2_l.png','d2_l.png','d2_l.png','d2_l.png','d3_l.png', 'd3_l.png','d3_l.png','d3_l.png','d4_l.png']]
 
-# enemy 오른쪽 이미지
+# 좀비 오른쪽 이미지
 enemy_right_mode_img = [['a1_r.png','a1_r.png','a1_r.png','a1_r.png', 'a2_r.png', 'a2_r.png','a2_r.png','a2_r.png','a3_r.png','a3_r.png','a3_r.png','a3_r.png', 'a4_r.png','a4_r.png','a4_r.png','a4_r.png'],\
                         ['b4_r.png','b1_r.png','b1_r.png','b1_r.png', 'b1_r.png', 'b2_r.png','b2_r.png','b2_r.png','b2_r.png','b3_r.png','b3_r.png','b3_r.png', 'b3_r.png','b4_r.png','b4_r.png','b4_r.png'],\
                         ['c4_r.png','c4_r.png','c1_r.png','c1_r.png', 'c1_r.png', 'c1_r.png','c2_r.png','c2_r.png','c2_r.png','c2_r.png','c3_r.png','c3_r.png', 'c3_r.png','c3_r.png','c4_r.png','c4_r.png'],\
                         ['d4_r.png','d4_r.png','d4_r.png','d1_r.png', 'd1_r.png', 'd1_r.png','d1_r.png','d2_r.png','d2_r.png','d2_r.png','d2_r.png','d3_r.png', 'd3_r.png','d3_r.png','d3_r.png','d4_r.png']]
+
 
 # 바람칼날 이미지
 skill_list = ['skill_1.png', 'skill_2.png', 'skill_3.png', 'skill_4.png','skill_5.png', 'skill_6.png','skill_7.png','skill_8.png','skill_9.png' ,'skill_10.png', 'skill_11.png', 'skill_12.png','skill_13.png', 'skill_14.png', 'skill_15.png']
@@ -27,34 +33,36 @@ fire_list = ['skill_16.png','fire1.png','fire2.png','fire3.png','fire4.png','fir
                     'fire17.png','fire18.png','fire19.png','fire20.png','fire21.png','fire22.png','fire23.png','fire24.png',\
                     'fire25.png','fire26.png','fire27.png','fire28.png','fire29.png','fire30.png']
 
+
+# 게임 초기화
 pygame.init()
 
 # 사운드 설정
 pygame.mixer.init()
-Sound_ingame = pygame.mixer.Sound("game_music.mp3")      #ingame 로드
-Sound_intro = pygame.mixer.Sound("start_music.mp3")      #intro 로드
-Sound_end = pygame.mixer.Sound("end_music3.mp3")       #end 로드
-Sound_intro.play(-1)                                   #시작 전 소리 무한 재생
+Sound_ingame = pygame.mixer.Sound("game_music.mp3")     #ingame 로드
+Sound_intro = pygame.mixer.Sound("start_music.mp3")     #intro 로드
+Sound_end = pygame.mixer.Sound("end_music3.mp3")        #end 로드
+Sound_intro.play(-1)                                    #시작 전 소리 무한 재생
 Sound_intro.set_volume(0.3)
-attack_fire = pygame.mixer.Sound("fireball.mp3")     #공격 사운드1 로드
-attack_sword = pygame.mixer.Sound("sword1.mp3")       #공격 사운드2 로드
+attack_fire = pygame.mixer.Sound("fireball.mp3")        #공격 사운드1 로드
+attack_sword = pygame.mixer.Sound("sword1.mp3")         #공격 사운드2 로드
 attack_nuclear = pygame.mixer.Sound("small.wav")        #폭발음
-damage_music = pygame.mixer.Sound("damage_music.mp3") #타격음
+damage_music = pygame.mixer.Sound("damage_music.mp3")   #타격음
 
 
 
-# 객체 생성
+# 객체 생성 (배경, 플레이어, 좀비, 공격스킬)
 class obj:
     def __init__(self):
-        self.x = 0  # x 좌표
-        self.y = 0  # y 좌표
-        self.horizon_move = 0   # x축 이동거리
+        self.x = 0               # x 좌표
+        self.y = 0               # y 좌표
+        self.horizon_move = 0    # x축 이동거리
         self.vertical_move = 0   # y축 이동거리
         self.number = 0
     def put_img(self, address):
         self.img = pygame.image.load(address)
         self.image_width, self.image_height = self.img.get_size()      # 파일 가로 세로 크기 읽어오기
-    def change_size(self, image_width, image_height):  # 이미지 파일 원하는 사이즈로 크기 변환
+    def change_size(self, image_width, image_height):                  # 이미지 파일 원하는 사이즈로 크기 변환
         self.img = pygame.transform.scale(self.img, (image_width, image_height))
         self.image_width, self.image_height = self.img.get_size()
     def show(self):
@@ -80,6 +88,7 @@ pygame.display.set_caption(title)
 background = obj()
 background.put_img('earth_1500.png')
 
+# 시간 설정
 clock = pygame.time.Clock()
 running = True
 standby = 0
@@ -90,12 +99,12 @@ player.put_img('wood_walk.gif')
 player.x = round(size[0] / 2 - player.image_width / 2)
 player.y = round(size[1] / 2 - player.image_height / 2)
 # 플레이어 초기설정
-player.horizon_move = 5
-player.vertical_move = 5
+player.horizon_move = 5   # 가로 이동속도
+player.vertical_move = 5  # 새로 이동속도
 player_rwalk = 0
 player_lwalk = 0
 
-# 체력바 생성
+# 플레이어 체력바 생성
 hp = obj()
 hp.put_img('hp.png')
 hp.change_size(42, 5)
@@ -113,18 +122,18 @@ fire.x = 300
 fire.y = 0
 
 # 초기 설정
-enemy_number = 0 # 적 생성순서
-enemy_motion_number = 0 # 적의 움직임 순서
-birth_position = 0 # 적이 생성되는 pos
-how_many = 0.9 # 리젠율 초기값
-enemy_list = []  # 적 리스트
-delete_enemy_list = [] # 충돌 후 제거되는 적 리스트
+enemy_number = 0          # 적 생성순서
+enemy_motion_number = 0   # 적의 움직임 순서
+birth_position = 0        # 적이 생성되는 pos
+how_many = 0.9            # 리젠율 초기값
+enemy_list = []           # 적 리스트
+delete_enemy_list = []    # 충돌 후 제거되는 적 리스트
 
-bullet_list = []  # 총알 리스트
-delete_bullet_list = [] # 충돌 후 총알 제거되는 리스트
-orbital_bullet_status = False # 궤도 불렛 상태
-orbital_bullet_theta = 0 # 초기 각도
-shooting_count = 0 # 총알 갯수
+bullet_list = []               # 총알 리스트
+delete_bullet_list = []        # 충돌 후 총알 제거되는 리스트
+orbital_bullet_status = False  # 궤도 불렛 상태
+orbital_bullet_theta = 0       # 초기 각도
+shooting_count = 0             # 총알 갯수
 
 # 바람칼날 생성
 skill = obj()
@@ -188,7 +197,13 @@ if __name__ == '__main__':
         screen.blit(text, (round(size[0] / 2 - 330), round(size[1] / 3 + 300)))  # 대기화면 press 위치
         pygame.display.flip()
 
-    #게임 시작
+        
+        
+        
+        
+    ################# 게임 시작 ##################
+    
+    
     start_time = datetime.now()  # 시간함수
     while running:
         
@@ -196,12 +211,12 @@ if __name__ == '__main__':
         delta_time = round((now_time - start_time).total_seconds())
         clock.tick(60)  # FPS 설정
 
-        # 키보드 조작 입력
+        # 키보드 이벤트 처리
         for event in pygame.event.get():
             # 종료 조작
             if event.type == pygame.QUIT:
                 running = False
-            # 키보드 누르는 순간 처리
+            # 키보드 누른 상태일 때
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     left_go = True
@@ -224,7 +239,7 @@ if __name__ == '__main__':
                 if event.key == pygame.K_f:
                     f_go = True
 
-            # 키보드 떼는 순간 처리
+            # 키보드 뗀 
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
                     left_go = False
@@ -299,7 +314,7 @@ if __name__ == '__main__':
         hp.x = player.x + 3
         hp.y = player.y + 47
 
-        # enemy 생성빈도
+        # enemy 생성빈도 (시간이 지날수록 점점 많아짐)
         if delta_time > 15:
             how_many = 0.8
         if delta_time > 30:
@@ -354,7 +369,7 @@ if __name__ == '__main__':
                 enemy_number += 1
                 enemy_list.append(enemy)
 
-        # enemy 이동 경로
+        # 좀비 이동 경로 (플레이어와 점점 가까우지도록)
         for i in range(len(enemy_list)):
             enemy_list[i].x -= (enemy_list[i].x - player.x) /50
 
@@ -397,7 +412,7 @@ if __name__ == '__main__':
         enemy_motion_number += 1
         
         
-        # 보스 생성
+        # 보스 생성 (일정 시간 경과시)
         if delta_time > boss1_time :
             if boss1.x >= size[0] - boss1.image_width :
                 boss1.horizon_move = -5
@@ -420,7 +435,7 @@ if __name__ == '__main__':
             boss3.x += boss3.horizon_move
             boss3.y = 750 - boss3.image_height / 2
 
-# player, 보스 충돌 코드
+# player, 보스 충돌 코드 (보스 충돌시 즉사)
         if crash(boss1, player) == True:
             dam = 80
         if crash(boss2, player) == True:
@@ -428,7 +443,7 @@ if __name__ == '__main__':
         if crash(boss3, player) == True:
             dam = 80
 
-        # skill 생성
+        ##### skill 생성 #####
         if r_go == True:
             attack_sword.play()
             attack_sword.set_volume(0.5)
